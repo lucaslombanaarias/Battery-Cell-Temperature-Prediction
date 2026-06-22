@@ -6,17 +6,17 @@ cell temperatures from operating and design parameters — built as a cheap, fas
 
 > **Portfolio note.** This repository is a self-contained, reproducible reconstruction
 > of work I did at **Ghost Electric Motorcycles**. Because the real bench-test data is
-> proprietary, this repo trains on **physically-grounded synthetic data** that I
+> proprietary, this repo trains on physically-grounded synthetic data that I
 > generate from a documented thermal model. Every metric reported below is produced by
-> *this* synthetic pipeline — see the [honesty note](#honesty-note).
+> *this* synthetic pipeline.
 
 ---
 
 ## Real-world context
 
 On the software/electrical team at Ghost Electric Motorcycles, I trained and validated a
-random-forest regression model on **10,000+ bench-test data points** to predict battery
-cell temperatures. The model acted as a **surrogate for CFD thermal simulation**: instead
+random-forest regression model on 10,000+ bench-test data points to predict battery
+cell temperatures. The model acted as a surrogate for CFD thermal simulation. Instead
 of running a full computational-fluid-dynamics solve on every pack design iteration, the
 team could query the model in milliseconds to predict where cells would run hot from the
 operating and design parameters. This let us:
@@ -24,7 +24,7 @@ operating and design parameters. This let us:
 - **Screen pack designs** without running CFD on every iteration.
 - **Guide heat-sink placement and cell-layout decisions** by identifying hot-spot drivers.
 
-> **Honesty note**
+> **Note**
 > On the real project, with real bench data, this approach reduced CFD iterations by
 > **~65%** and improved heat dissipation by **~40%**. **Those figures come from the real
 > hardware project and are NOT outputs of this repository.** They are stated here only as
