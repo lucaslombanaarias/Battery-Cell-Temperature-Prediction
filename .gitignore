@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+# Regenerable pipeline outputs (recreate with the Quickstart commands)
+data/
+models/
+
+# Note: reports/ (plots + metrics.json) is intentionally committed so the
+# figures render in the README on GitHub.
+
+*.egg-info/
+dist/
+build/
+.ipynb_checkpoints/

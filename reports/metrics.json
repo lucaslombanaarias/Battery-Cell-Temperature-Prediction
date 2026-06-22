@@ -1,0 +1,66 @@
+{
+  "n_train": 9600,
+  "n_test": 2400,
+  "test": {
+    "rmse": 2.338859869440181,
+    "mae": 1.6720109542087294,
+    "r2": 0.937130548069571
+  },
+  "baseline_mean": {
+    "rmse": 9.32991479389316,
+    "mae": 7.322179774305557,
+    "r2": -0.0004298121726447057
+  },
+  "rmse_improvement_pct_vs_baseline": 74.93160525998515,
+  "oob_r2": 0.9390126813075865,
+  "cv5_train": {
+    "rmse_mean": 2.353446934150523,
+    "rmse_std": 0.07178014546782249,
+    "r2_mean": 0.9341329064896694,
+    "r2_std": 0.0032798611072513283
+  },
+  "feature_importance_mdi": {
+    "ambient_temp_c": 0.4780762225132795,
+    "discharge_current_a": 0.24887906157891254,
+    "internal_resistance_mohm": 0.0748156327057375,
+    "elapsed_load_time_min": 0.06539336789173555,
+    "airflow_speed_mps": 0.05420682749387287,
+    "initial_temp_c": 0.04487627257521069,
+    "cell_position": 0.02961564938480088,
+    "state_of_charge_pct": 0.004136965856450441
+  },
+  "feature_importance_permutation": {
+    "ambient_temp_c": {
+      "mean": 0.8820158058652254,
+      "std": 0.022460565649412904
+    },
+    "discharge_current_a": {
+      "mean": 0.5568252914487536,
+      "std": 0.02000872517405962
+    },
+    "internal_resistance_mohm": {
+      "mean": 0.14188292939936678,
+      "std": 0.0058115030605061105
+    },
+    "elapsed_load_time_min": {
+      "mean": 0.12597685247769458,
+      "std": 0.0052568682942716275
+    },
+    "airflow_speed_mps": {
+      "mean": 0.09618907696522937,
+      "std": 0.004802301743294882
+    },
+    "initial_temp_c": {
+      "mean": 0.07483747152059837,
+      "std": 0.0027058399094873815
+    },
+    "cell_position": {
+      "mean": 0.03787024445858138,
+      "std": 0.003591833046975104
+    },
+    "state_of_charge_pct": {
+      "mean": 0.00236331680340478,
+      "std": 0.000350385500949845
+    }
+  }
+}

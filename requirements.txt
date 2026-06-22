@@ -1,0 +1,7 @@
+# Pinned to the exact versions this repo was built and verified against
+# (Python 3.13). Install into a virtual environment -- see README Quickstart.
+numpy==2.5.0
+pandas==3.0.3
+scikit-learn==1.9.0
+matplotlib==3.11.0
+joblib==1.5.3
