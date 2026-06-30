@@ -1,5 +1,7 @@
 # Battery Cell Temperature Prediction
 
+[![CI](https://github.com/lucaslombanaarias/Battery-Cell-Temperature-Prediction/actions/workflows/ci.yml/badge.svg)](https://github.com/lucaslombanaarias/Battery-Cell-Temperature-Prediction/actions/workflows/ci.yml)
+
 A scikit-learn **random-forest regression model** that predicts lithium-ion battery
 cell temperatures from operating and design parameters — built as a cheap, fast
 **surrogate for expensive CFD thermal simulation**.
@@ -232,10 +234,58 @@ pip install -r requirements.txt
 python src/generate_data.py   # -> data/battery_thermal_data.csv  (12,000 rows)
 python src/train.py           # -> models/rf_model.joblib  (+ train/test splits)
 python src/evaluate.py        # -> prints metrics; writes reports/ (plots + metrics.json)
+
+# 4. Query the trained model (the CFD-replacement use case)
+python src/predict.py         # -> predicts a few operating points; times the query
 ```
 
 Everything is reproducible: fixed seed (42), pinned dependencies, and a seeded train/test
 split persisted to disk so evaluation always scores the identical held-out rows.
+
+### Inference demo (`src/predict.py`)
+
+The model exists to replace a minutes-to-hours CFD solve with a millisecond lookup, so
+`predict.py` actually exercises it: it scores a handful of labeled operating points — from a
+cool, well-cooled **edge** cell to a hot, poorly-ventilated **center** cell — and times the
+query. Representative output (numbers are machine-dependent; the script prints whatever it
+measures on your hardware):
+
+```
+Operating point                              Pred. cell temp
+------------------------------------------------------------
+Edge cell, light load, strong airflow              22.6 degC
+Mid-pack cell, nominal load                        34.5 degC
+Center cell, heavy load, weak airflow              74.7 degC
+Hot ambient, sustained heavy load                  58.2 degC
+
+Latency
+------------------------------------------------------------
+Single query (mean of 200)                      ~37 ms
+Bulk screen of 1,000 points                    ~100 ms
+  -> per point                                  ~0.1 ms
+```
+
+The temperature spread is the physics doing its job — center/low-airflow cells run far hotter.
+The latency line is the value proposition made concrete: screening a 1,000-point design space
+amortizes to **~0.1 ms per point**, versus the minutes-to-hours a CFD solve costs per design.
+
+### Tests (`tests/`)
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q
+```
+
+Two kinds of test back the claims above:
+
+- **Plumbing** (`test_generate_data.py`, `test_pipeline.py`) — the generator returns the right
+  shape and in-range values, generation is deterministic per seed, and the full
+  generate → train → evaluate pipeline runs end-to-end and writes `reports/metrics.json` with the
+  model beating the mean baseline.
+- **Physics-sanity** (`test_model_physics.py`) — these test the *model*, not just the code:
+  a correctly-fit surrogate must reproduce the monotonic relationships in the data. Raising
+  `discharge_current_a` or `ambient_temp_c` must raise predicted temperature; raising
+  `airflow_speed_mps` must lower it; moving a cell from **edge → center** must raise it.
 
 ---
 
@@ -246,7 +296,12 @@ Ghost_Battery_Prediction/
 ├── src/
 │   ├── generate_data.py     # Physics-based synthetic data generator
 │   ├── train.py             # Random-forest training (+ OOB, saves splits)
-│   └── evaluate.py          # Metrics, CV, baseline, permutation importance, plots
+│   ├── evaluate.py          # Metrics, CV, baseline, permutation importance, plots
+│   └── predict.py           # Load the model, score operating points, time the query
+├── tests/                   # pytest: plumbing + physics-sanity checks
+│   ├── test_generate_data.py
+│   ├── test_model_physics.py
+│   └── test_pipeline.py     # end-to-end generate -> train -> evaluate
 ├── reports/                 # Committed outputs so figures render on GitHub
 │   ├── predicted_vs_actual.png
 │   ├── residuals.png
@@ -254,7 +309,11 @@ Ghost_Battery_Prediction/
 │   └── metrics.json         # Machine-readable results
 ├── data/                    # Generated CSVs (gitignored, regenerable)
 ├── models/                  # Trained model (gitignored, regenerable)
+├── .github/workflows/ci.yml # Runs the generator + test suite on every push
 ├── requirements.txt         # Exact pinned versions (Python 3.13)
+├── requirements-dev.txt     # Runtime deps + pytest
+├── pytest.ini
+├── LICENSE                  # MIT
 ├── .gitignore
 └── README.md
 ```
@@ -285,4 +344,4 @@ bench-test data I would:
 
 ## Tech stack
 
-Python · NumPy · pandas · scikit-learn · Matplotlib · joblib
+Python · NumPy · pandas · scikit-learn · Matplotlib · joblib · pytest · GitHub Actions
