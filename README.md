@@ -194,6 +194,21 @@ features — `airflow_speed_mps` and `cell_position` — are both **clearly abov
 quantitative basis for "the model guided heat-sink placement and layout": it confirms cooling
 airflow and cell position are real, rank-able levers on hot-spot temperature.
 
+### Hot-spot map
+
+Feature importance says *which* levers matter; the hot-spot map shows *where* they bite.
+`src/hotspot_map.py` sweeps the two design-controllable levers — **airflow** and **cell
+position** — across a grid while holding a fixed heavy load constant, queries the model at every
+point, and renders the predicted-temperature field:
+
+![Hot-spot map](reports/hotspot_map.png)
+
+The danger zone is unambiguous: **interior cells under weak airflow** (bottom-right) run ~20 °C
+hotter than well-cooled edge cells (top-left) at the same load. That is exactly the kind of map
+that motivates a design decision — add cooling/heat-sinking to the interior, or relocate the
+hottest cells toward the edge. It is the model's headline claim ("guided heat-sink placement and
+cell-layout decisions") expressed as a single figure rather than a sentence.
+
 ---
 
 ## Limitations (read before judging the metrics)
@@ -237,6 +252,7 @@ python src/evaluate.py        # -> prints metrics; writes reports/ (plots + metr
 
 # 4. Query the trained model (the CFD-replacement use case)
 python src/predict.py         # -> predicts a few operating points; times the query
+python src/hotspot_map.py     # -> reports/hotspot_map.png  (airflow x position sweep)
 ```
 
 Everything is reproducible: fixed seed (42), pinned dependencies, and a seeded train/test
@@ -297,7 +313,8 @@ Ghost_Battery_Prediction/
 │   ├── generate_data.py     # Physics-based synthetic data generator
 │   ├── train.py             # Random-forest training (+ OOB, saves splits)
 │   ├── evaluate.py          # Metrics, CV, baseline, permutation importance, plots
-│   └── predict.py           # Load the model, score operating points, time the query
+│   ├── predict.py           # Load the model, score operating points, time the query
+│   └── hotspot_map.py       # Airflow x position sweep -> predicted-temperature heat map
 ├── tests/                   # pytest: plumbing + physics-sanity checks
 │   ├── test_generate_data.py
 │   ├── test_model_physics.py
@@ -306,6 +323,7 @@ Ghost_Battery_Prediction/
 │   ├── predicted_vs_actual.png
 │   ├── residuals.png
 │   ├── feature_importances.png
+│   ├── hotspot_map.png      # Predicted hot-spot field (airflow x cell position)
 │   └── metrics.json         # Machine-readable results
 ├── data/                    # Generated CSVs (gitignored, regenerable)
 ├── models/                  # Trained model (gitignored, regenerable)
